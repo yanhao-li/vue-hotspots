@@ -1,7 +1,7 @@
 {
   "name": "vue-hotspots",
-  "version": "0.1.0",
-  "main":"dist/vue-hotspots.umd.min.js",
+  "version": "0.2.0",
+  "main": "dist/vue-hotspots.umd.min.js",
   "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
