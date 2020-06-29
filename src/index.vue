@@ -40,7 +40,6 @@ export default {
   data() {
     return {
       hotspots: [],
-      currentHotspot: null,
       isDragging: false,
       showHotspotInfo: false,
     }
@@ -52,6 +51,10 @@ export default {
     },
     model: {
       type: Object,
+    },
+    currentHotspot: {
+      type: Object,
+      required: true,
     }
   },
   mounted() {
@@ -68,7 +71,7 @@ export default {
     },
     dragStart(hotspot) {
       this.isDragging = true;
-      this.currentHotspot = hotspot;
+      this.$emit('update:currentHotspot', hotspot);
     },
     dragging(e) {
       if (this.isDragging && this.draggable) {
