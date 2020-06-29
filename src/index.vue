@@ -11,13 +11,13 @@
         :key="hotspot.id"
         :data="hotspot"
         @mousedown="dragStart(hotspot)"
-        @open="showHotspotInfo = true"
+        @open="openHotspotInfo"
       >
       </Hotspot>
     </div>
     <HotspotInfo 
       v-if="showHotspotInfo"
-      @close="showHotspotInfo = false"
+      @close="closeHotspotInfo"
       @delete="deleteHotspot"
     >
       <slot name="form" :currentHotspot="currentHotspot"></slot>
@@ -54,24 +54,25 @@ export default {
     },
     currentHotspot: {
       type: Object,
-      required: true,
     }
   },
   mounted() {
-    window.addEventListener('mouseup', this.dragStop);
-    window.addEventListener('mousemove', this.dragging);
+    window.addEventListener('mouseup', this.dragStop)
+    window.addEventListener('mousemove', this.dragging)
   },
   methods: {
     addHotspot(e) {
-      this.hotspots = this.hotspots.concat({
+      const newHotspot = {
         'id': shortid.generate(),
         ...this.getMousePos(e),
         ...this.model
-      })
+      };
+      this.hotspots = this.hotspots.concat(newHotspot);
+      this.$emit('update:currentHotspot', newHotspot)
     },
     dragStart(hotspot) {
       this.isDragging = true;
-      this.$emit('update:currentHotspot', hotspot);
+      this.$emit('update:currentHotspot', hotspot)
     },
     dragging(e) {
       if (this.isDragging && this.draggable) {
@@ -87,23 +88,35 @@ export default {
       }
     },
     dragStop() {
-      this.isDragging = false;
+      if (this.isDragging) {
+        this.isDragging = false
+        this.$emit('update:currentHotspot', null)
+      }
     },
     deleteHotspot() {
-      this.showHotspotInfo = false;
+      this.showHotspotInfo = false
       this.hotspots = this.hotspots.filter((hotspot) => {
         return hotspot.id !== this.currentHotspot.id
       })
+      this.$emit('update:currentHotspot', null)
     },
     getMousePos(e) {
       // size of the entire element
       const rect = this.$el.getBoundingClientRect()
-      const x = (e.clientX - rect.left) / rect.width * 100;
-      const y = (e.clientY - rect.top) / rect.height * 100;
+      const x = (e.clientX - rect.left) / rect.width * 100
+      const y = (e.clientY - rect.top) / rect.height * 100
       return {
         'x': x < 0 ? 0 : (x > 100 ? 100 : x),
         'y': y < 0 ? 0 : (y > 100 ? 100 : y)
       }
+    },
+    openHotspotInfo(hotspot) {
+      this.showHotspotInfo = true
+      this.$emit('update:currentHotspot', hotspot)
+    },
+    closeHotspotInfo() {
+      this.showHotspotInfo = false
+      this.$emit('update:currentHotspot', null)
     }
   },
   watch: {

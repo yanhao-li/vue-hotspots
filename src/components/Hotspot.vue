@@ -25,7 +25,7 @@ export default {
   methods: {
     onDblClick() {
       this.hotspotAnimating = true
-      setTimeout(() => this.$emit('open'), 300);
+      setTimeout(() => this.$emit('open', this.data), 300);
     }
   }
 }
